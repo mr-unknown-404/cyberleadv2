@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leads | Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --orange: #fd7e14;
+      --purple: #6f42c1;
+    }
+    .pagination-active {
+      @apply bg-purple-600 text-white;
+    }
+  </style>
+</head>
+<body class="bg-purple-50 text-sm text-gray-800">
+
+<!-- Navbar -->
+<nav class="bg-gradient-to-r from-orange-500 to-purple-600 text-white px-4 py-3 shadow flex justify-between items-center">
+  <h1 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-database"></i> Lead Manager</h1>
+  <div class="space-x-2">
+    <a href="/index.html" class="hover:underline"><i class="fas fa-chart-line mr-1"></i> Dashboard</a>
+    <button onclick="logout()" class="border border-white rounded px-3 py-1 hover:bg-white hover:text-purple-700"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</nav>
+
+<!-- Filters -->
+<div class="p-4 flex flex-wrap gap-3 items-center bg-white shadow">
+  <input id="searchInput" type="text" placeholder="Search name, company or SrNo" class="border border-purple-300 rounded px-3 py-2 w-full md:w-1/4">
+  <select id="cityFilter" class="border border-purple-300 rounded px-3 py-2 w-full md:w-1/5">
+    <option value="">All Cities</option>
+    <option value="Surat">Surat</option>
+  </select>
+  <select id="statusFilter" class="border border-purple-300 rounded px-3 py-2 w-full md:w-1/5">
+    <option value="">All Status</option>
+    <option value="connected">Connected</option>
+    <option value="pending">Pending</option>
+    <option value="not contacted">Not Contacted</option>
+    <option value="unsubscribed">Unsubscribed</option>
+  </select>
+  <button onclick="applyFilters()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Apply</button>
+  <button onclick="resetFilters()" class="border border-purple-600 text-purple-600 px-4 py-2 rounded hover:bg-purple-600 hover:text-white">Reset</button>
+</div>
+
+<!-- Leads Table -->
+<div class="m-4 bg-white shadow rounded p-4">
+  <h2 class="text-lg font-bold text-purple-700 mb-4"><i class="fas fa-users mr-2"></i>Lead List</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border border-purple-200 text-sm">
+      <thead class="bg-orange-500 text-white">
+        <tr>
+          <th class="p-2">SrNo.</th>
+          <th class="p-2">Name</th>
+          <th class="p-2">Company</th>
+          <th class="p-2">City</th>
+          <th class="p-2">LinkedIn</th>
+          <th class="p-2">Status</th>
+          <th class="p-2">Req</th>
+          <th class="p-2">Sent</th>
+          <th class="p-2">Msg</th>
+          <th class="p-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="leadTable" class="text-gray-700 text-sm">
+        <!-- Dynamic content -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div id="pagination" class="flex flex-wrap justify-center gap-1 mb-6"></div>
+
+<!-- Script -->
+<script>
+let currentPage = 1;
+let filters = { city: '', status: '', search: '' };
+
+function logout() {
+  localStorage.removeItem('jwt');
+  window.location.href = '/login.html';
+}
+
+function applyFilters() {
+  filters.city = document.getElementById('cityFilter').value;
+  filters.status = document.getElementById('statusFilter').value;
+  filters.search = document.getElementById('searchInput').value;
+  currentPage = 1;
+  loadLeads();
+}
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('cityFilter').value = '';
+  document.getElementById('statusFilter').value = '';
+  filters = { city: '', status: '', search: '' };
+  currentPage = 1;
+  loadLeads();
+}
+
+function renderPagination(totalItems, itemsPerPage) {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const container = document.getElementById('pagination');
+  container.innerHTML = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.className = `px-3 py-1 border border-purple-400 rounded ${
+      i === currentPage ? 'bg-purple-600 text-white' : 'text-purple-600 bg-white hover:bg-purple-100'
+    }`;
+    btn.onclick = () => {
+      currentPage = i;
+      loadLeads();
+    };
+    container.appendChild(btn);
+  }
+}
+
+async function loadLeads() {
+  const query = new URLSearchParams({
+    page: currentPage,
+    limit: 10,
+    city: filters.city,
+    status: filters.status,
+    search: filters.search
+  });
+  const res = await fetch(`/api/leads?${query}`);
+  const { data: leads, total } = await res.json();
+  const table = document.getElementById('leadTable');
+  table.innerHTML = '';
+  leads.forEach(lead => {
+    const encoded = encodeURIComponent(JSON.stringify(lead));
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="p-2">${lead.SrNo || ''}</td>
+      <td class="p-2">${lead.name || ''}</td>
+      <td class="p-2">${lead.companyname || ''}</td>
+      <td class="p-2">${lead.city || ''}</td>
+      <td class="p-2"><a href="${lead.linkedin || '#'}" target="_blank" class="text-blue-600 underline">View</a></td>
+      <td class="p-2">${lead.status || ''}</td>
+      <td class="text-center">${lead.req ? '✅' : '❌'}</td>
+      <td class="text-center"><input type="checkbox" class="form-check-input sent-check" data-id="${lead._id}" ${lead.sent ? 'checked' : ''}></td>
+      <td class="text-center"><input type="checkbox" class="form-check-input msgsent-check" data-id="${lead._id}" ${lead.msgsent ? 'checked' : ''}></td>
+      <td class="text-center space-x-1">
+        <button class="text-orange-500 hover:text-orange-700"><i class="fas fa-edit"></i></button>
+        <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash-alt"></i></button>
+      </td>`;
+    table.appendChild(row);
+  });
+
+  renderPagination(total, 10);
+}
+
+window.onload = loadLeads;
+</script>
+
+</body>
+</html>

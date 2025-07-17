@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lead Manager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .form-section {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+    .btn-copy {
+      font-size: 0.8rem;
+      margin-left: 10px;
+    }
+    textarea[disabled] {
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body class="container py-4">
+<script>
+  const token = localStorage.getItem('jwt');
+  if (!token) {
+    window.location.href = '/login.html';
+  }
+</script>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><i class="fas fa-database me-2"></i>Lead Manager</a>
+    <div class="d-flex">
+      <button class="btn btn-outline-secondary me-2" data-bs-toggle="modal" data-bs-target="#settingsModal">
+        <i class="fas fa-cog"></i> Settings
+      </button>
+      <button class="btn btn-outline-secondary" onclick="logout()">
+        <i class="fa fa-sign-out"></i> Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="settingsForm" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="settingsModalLabel"><i class="fas fa-cog me-2"></i>General Settings</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="linkedinToken" class="form-label">LinkedIn Token</label>
+          <input type="text" class="form-control" id="linkedinToken" placeholder="Enter your LinkedIn li_at token">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save Settings</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Lead Modal -->
+<div class="modal fade" id="editLeadModal" tabindex="-1" aria-labelledby="editLeadLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form id="leadForm" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editLeadLabel"><i class="fas fa-user-edit me-2"></i>Edit Lead</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="_id">
+        <div class="row g-3 mb-3">
+          <div class="col"><input class="form-control" id="SrNo" type="number" placeholder="Sr No"></div>
+          <div class="col"><input class="form-control" id="name" placeholder="Name"></div>
+          <div class="col"><input class="form-control" id="firstname" placeholder="First Name"></div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col"><input class="form-control" id="designation" placeholder="Designation"></div>
+          <div class="col"><input class="form-control" id="companyname" placeholder="Company Name"></div>
+          <div class="col"><input class="form-control" id="city" placeholder="City"></div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col"><input class="form-control" id="linkedin" placeholder="LinkedIn URL"></div>
+          <div class="col"><input class="form-control" id="connectedBy" placeholder="Connected By"></div>
+          <div class="col">
+            <select class="form-select" id="status">
+              <option value="">Select Status</option>
+              <option value="connected">Connected</option>
+              <option value="pending">Pending</option>
+              <option value="not contacted">Not Contacted</option>
+              <option value="unsubscribed">Unsubscribed</option>
+            </select>
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col form-check">
+            <input class="form-check-input" type="checkbox" id="Researched">
+            <label class="form-check-label" for="Researched">Researched</label>
+          </div>
+          
+          <div class="col form-check">
+            <input class="form-check-input" type="checkbox" id="req">
+            <label class="form-check-label" for="req">Request Accepted</label>
+          </div>
+          <div class="col form-check">
+            <input class="form-check-input d-none" type="checkbox" id="msgsent">
+<!--             <label class="form-check-label" for="msgsent">Message Sent</label> -->
+          </div>
+          <div class="col form-check">
+            <input class="form-check-input d-none" type="checkbox" id="sent">
+<!--             <label class="form-check-label" for="sent">Request Sent</label> -->
+          </div>
+        </div>
+        <div class="mb-3">
+          <textarea class="form-control" id="Overview" rows="3" placeholder="Company Overview"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="msg_draft_Company">
+            <strong>Message Draft (Company)</strong>
+            <button type="button" class="btn btn-sm btn-outline-secondary btn-copy" onclick="copyToClipboard('msg_draft_Company')">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </label>
+          <textarea class="form-control" id="msg_draft_Company" rows="3" disabled></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="msg_draft_Individual">
+            <strong>Message Draft (Individual)</strong>
+            <button type="button" class="btn btn-sm btn-outline-secondary btn-copy" onclick="copyToClipboard('msg_draft_Individual')">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </label>
+          <textarea class="form-control" id="msg_draft_Individual" rows="3" disabled></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary w-100" type="submit"><i class="fas fa-save me-2"></i>Update Lead</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="d-flex mb-3">
+  <input class="form-control me-2" type="text" id="searchInput" placeholder="Search name, company or SrNo">
+  <select class="form-select me-2" id="cityFilter">
+    <option value="">All Cities</option>
+    <option value="Surat">Surat</option>
+    <!-- <option value="Delhi">Delhi</option> -->
+    <!-- Add other cities -->
+  </select>
+  <select class="form-select me-2" id="statusFilter">
+    <option value="">All Status</option>
+    <option value="connected">Connected</option>
+    <option value="pending">Pending</option>
+    <option value="not contacted">Not Contacted</option>
+    <option value="unsubscribed">Unsubscribed</option>
+  </select>
+  <button class="btn btn-primary" onclick="applyFilters()">Apply</button>&nbsp;
+   <button class="btn btn-outline-secondary" onclick="resetFilters()">Reset</button>
+</div>
+
+<div id="pagination" class="d-flex justify-content-center mt-3"></div>
+
+
+<!-- Table Section -->
+<div class="form-section">
+  <h4 class="mb-3"><i class="fas fa-list me-2"></i>Lead List</h4>
+  <table class="table table-bordered table-hover align-middle" id="leadTable">
+    <thead class="table-light">
+      <tr>
+        <th>SrNo.</th>
+        <th>Name</th>
+        <th>Company</th>
+        <th>City</th>
+        <th>LinkedIn</th>
+        <th>Status</th>
+        <th>Req Accepted</th>
+        <th>Req Sent </th>
+        <th>Msg Sent </th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const table = document.getElementById('leadTable').querySelector('tbody');
+const applyFilters = () => {
+  filters.city = document.getElementById('cityFilter').value;
+  filters.status = document.getElementById('statusFilter').value;
+  filters.search = document.getElementById('searchInput').value;
+  currentPage = 1;
+  loadLeads();
+};
+
+const renderPagination = (totalItems, itemsPerPage) => {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const container = document.getElementById('pagination');
+  container.innerHTML = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.className = `btn btn-sm mx-1 ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'}`;
+    btn.onclick = () => {
+      currentPage = i;
+      loadLeads();
+    };
+    container.appendChild(btn);
+  }
+};
+const resetFilters = () => {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('cityFilter').value = '';
+  document.getElementById('statusFilter').value = '';
+
+  filters = { city: '', status: '', search: '' };
+  currentPage = 1;
+  loadLeads();
+};
+
+ let currentPage = 1;
+let filters = { city: '', status: '', search: '' };
+
+const loadLeads = async () => {
+  const query = new URLSearchParams({
+    page: currentPage,
+    limit: 10,
+    city: filters.city,
+    status: filters.status,
+    search: filters.search
+  });
+
+  const res = await fetch(`/.netlify/functions/leads?${query}`);
+  const { data: leads, total } = await res.json();
+
+  table.innerHTML = '';
+  leads.forEach(lead => {
+    const encoded = encodeURIComponent(JSON.stringify(lead));
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${lead.SrNo || ''}</td>
+      <td>${lead.name || ''}</td>
+      <td>${lead.companyname || ''}</td>
+      <td>${lead.city || ''}</td>
+      <td><a href="${lead.linkedin || '#'}" target="_blank">View</a></td>
+      <td>${lead.status || ''}</td>
+      <td style="text-align: center;">${lead.req ? '<i class="fas fa-check-square" style="color: green;font-size: 18px;"></i>' : '<i class="fa-solid fa-square-xmark"style="color: red;font-size: 18px;"></i>'}</td>
+      <td style="text-align: center;">
+         <input type="checkbox" class="form-check-input sent-check" data-id="${lead._id}" ${lead.sent ? 'checked' : ''}>
+      </td>
+      <td style="text-align: center;">
+         <input type="checkbox" class="form-check-input msgsent-check" data-id="${lead._id}" ${lead.msgsent ? 'checked' : ''}>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-outline-warning edit-btn" data-lead="${encoded}">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-danger" onclick='deleteLead("${lead._id}")'>
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>`;
+    table.appendChild(row);
+  });
+
+  renderPagination(total, 10);
+};
+
+//   document.addEventListener('change', async (e) => {
+//   if (e.target.classList.contains('sent-check') || e.target.classList.contains('req-check')) {
+//     const leadId = e.target.dataset.id;
+//     const field = e.target.classList.contains('sent-check') ? 'sent' : 'req';
+//     const value = e.target.checked;
+
+//     await fetch(`/.netlify/functions/leads/${leadId}`, {
+//       method: 'PUT',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ [field]: value })
+//     });
+//   }
+// });
+  document.addEventListener('change', async (e) => {
+  if (
+    e.target.classList.contains('sent-check') ||
+    e.target.classList.contains('req-check') ||
+    e.target.classList.contains('msgsent-check')
+  ) {
+    const leadId = e.target.dataset.id;
+    let field;
+
+    if (e.target.classList.contains('sent-check')) {
+      field = 'sent';
+    } else if (e.target.classList.contains('req-check')) {
+      field = 'req';
+    } else if (e.target.classList.contains('msgsent-check')) {
+      field = 'msgsent';
+    }
+
+    const value = e.target.checked;
+     await fetch(`/.netlify/functions/leads/${leadId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: value })
+    });
+  }
+});
+
+
+   document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button.edit-btn');
+  if (btn) {
+    const lead = JSON.parse(decodeURIComponent(btn.getAttribute('data-lead')));
+    document.getElementById('_id').value = lead._id;
+    document.getElementById('SrNo').value = lead.SrNo || '';
+    document.getElementById('name').value = lead.name || '';
+    document.getElementById('firstname').value = lead.firstname || '';
+    document.getElementById('designation').value = lead.designation || '';
+    document.getElementById('companyname').value = lead.companyname || '';
+    document.getElementById('city').value = lead.city || '';
+    document.getElementById('linkedin').value = lead.linkedin || '';
+    document.getElementById('Overview').value = lead.Overview || '';
+    document.getElementById('connectedBy').value = lead.connectedBy || '';
+    document.getElementById('status').value = lead.status || '';
+    document.getElementById('req').checked = !!lead.req;
+    document.getElementById('Researched').checked = !!lead.Researched;
+    document.getElementById('sent').checked = !!lead.sent;
+    document.getElementById('msgsent').checked = !!lead.msgsent;
+    document.getElementById('msg_draft_Company').value = lead.msg_draft?.Company || '';
+    document.getElementById('msg_draft_Individual').value = lead.msg_draft?.Individual || '';
+
+    // 👇 Show the Edit Modal
+    const editModal = new bootstrap.Modal(document.getElementById('editLeadModal'));
+    editModal.show();
+  }
+});
+
+document.getElementById('settingsModal').addEventListener('show.bs.modal', async () => {
+  try {
+    const res = await fetch('/.netlify/functions/linkedin-token');
+    const data = await res.json();
+    document.getElementById('linkedinToken').value = data.linkedinToken || '';
+  } catch (err) {
+    console.error('Failed to fetch LinkedIn token:', err);
+    alert('Error fetching LinkedIn token');
+  }
+});
+
+  const form = document.getElementById('leadForm');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const _id = document.getElementById('_id').value;
+    if (!_id) return alert('Please select a lead to edit.');
+    const lead = {
+      SrNo: Number(document.getElementById('SrNo').value) || undefined,
+      name: document.getElementById('name').value,
+      firstname: document.getElementById('firstname').value,
+      designation: document.getElementById('designation').value,
+      companyname: document.getElementById('companyname').value,
+      city: document.getElementById('city').value,
+      linkedin: document.getElementById('linkedin').value,
+      Overview: document.getElementById('Overview').value,
+      connectedBy: document.getElementById('connectedBy').value,
+      status: document.getElementById('status').value,
+      req: document.getElementById('req').checked,
+      Researched: document.getElementById('Researched').checked,
+      sent: document.getElementById('sent').checked,
+      msgsent: document.getElementById('msgsent').checked,
+      msg_draft: {
+        Company: document.getElementById('msg_draft_Company').value,
+        Individual: document.getElementById('msg_draft_Individual').value
+      }
+    };
+    await fetch(`/.netlify/functions/leads/${_id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lead)
+    });
+    bootstrap.Modal.getInstance(document.getElementById('editLeadModal')).hide();
+    loadLeads();
+  });
+
+  const deleteLead = async (id) => {
+    if (confirm('Are you sure you want to delete this lead?')) {
+      await fetch(`/.netlify/functions/leads/${id}`, { method: 'DELETE' });
+      loadLeads();
+    }
+  };
+
+  const copyToClipboard = (id) => {
+    const text = document.getElementById(id).value;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+    } else {
+      const area = document.createElement('textarea');
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      try {
+        document.execCommand('copy');
+        alert('Copied!');
+      } catch (err) {
+        alert('Failed to copy: ' + err);
+      }
+      document.body.removeChild(area);
+    }
+  };
+
+  function logout() {
+    localStorage.removeItem('jwt');
+    window.location.href = '/login.html';
+  }
+  
+
+  document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const token = document.getElementById('linkedinToken').value.trim();
+    const res = await fetch('/.netlify/functions/linkedin-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ linkedinToken: token })
+    });
+    const result = await res.json();
+    if (result.success) {
+      alert('Token saved!');
+      bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+    } else {
+      alert(result.error || 'Failed to save');
+    }
+  });
+
+  loadLeads();
+  // Auto-refresh leads every 30 seconds
+setInterval(() => {
+  loadLeads();
+}, 30000);
+  
+</script>
+</body>
+</html>
