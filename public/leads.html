@@ -1,163 +1,510 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Leads | Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    :root {
-      --orange: #fd7e14;
-      --purple: #6f42c1;
-    }
-    .pagination-active {
-      @apply bg-purple-600 text-white;
-    }
-  </style>
-</head>
-<body class="bg-purple-50 text-sm text-gray-800">
+  <head>
+    <meta charset="UTF-8" />
+    <title>All Leads</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-100 min-h-screen p-6">
+    <!-- Navbar -->
+    <nav
+      class="bg-gradient-to-r from-orange-500 to-purple-600 text-white shadow-md rounded-lg mb-6 px-6 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center gap-2 text-2xl font-bold">
+        <a href="/index.html"
+          ><i class="fas fa-chart-line"></i> <span>Dashboard</span></a
+        >
+      </div>
+      <div class="flex items-center gap-6 text-lg">
+        <a href="#" class="flex items-center gap-1">
+          <i class="fas fa-database"></i> Leads
+        </a>
+        <button onclick="openSettingsModal()" class="flex items-center gap-1">
+          <i class="fas fa-cog"></i> Settings
+        </button>
+      </div>
+    </nav>
 
-<!-- Navbar -->
-<nav class="bg-gradient-to-r from-orange-500 to-purple-600 text-white px-4 py-3 shadow flex justify-between items-center">
-  <h1 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-database"></i> Lead Manager</h1>
-  <div class="space-x-2">
-    <a href="/index.html" class="hover:underline"><i class="fas fa-chart-line mr-1"></i> Dashboard</a>
-    <button onclick="logout()" class="border border-white rounded px-3 py-1 hover:bg-white hover:text-purple-700"><i class="fas fa-sign-out-alt"></i> Logout</button>
-  </div>
-</nav>
+    <!-- Lead Table Section -->
+    <div class="bg-white p-6 rounded shadow mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-purple-700 flex items-center gap-2">
+          <i class="fas fa-users"></i> All Leads
+        </h2>
 
-<!-- Filters -->
-<div class="p-4 flex flex-wrap gap-3 items-center bg-white shadow">
-  <input id="searchInput" type="text" placeholder="Search name, company or SrNo" class="border border-purple-300 rounded px-3 py-2 w-full md:w-1/4">
-  <select id="cityFilter" class="border border-purple-300 rounded px-3 py-2 w-full md:w-1/5">
-    <option value="">All Cities</option>
-    <option value="Surat">Surat</option>
-  </select>
-  <select id="statusFilter" class="border border-purple-300 rounded px-3 py-2 w-full md:w-1/5">
-    <option value="">All Status</option>
-    <option value="connected">Connected</option>
-    <option value="pending">Pending</option>
-    <option value="not contacted">Not Contacted</option>
-    <option value="unsubscribed">Unsubscribed</option>
-  </select>
-  <button onclick="applyFilters()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Apply</button>
-  <button onclick="resetFilters()" class="border border-purple-600 text-purple-600 px-4 py-2 rounded hover:bg-purple-600 hover:text-white">Reset</button>
-</div>
+        <div class="flex flex-wrap gap-2 mb-4 items-center">
+          <!-- Search Input -->
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Name, Company or SrNo"
+            class="w-full sm:w-auto flex-1 border border-purple-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
 
-<!-- Leads Table -->
-<div class="m-4 bg-white shadow rounded p-4">
-  <h2 class="text-lg font-bold text-purple-700 mb-4"><i class="fas fa-users mr-2"></i>Lead List</h2>
-  <div class="overflow-x-auto">
-    <table class="w-full text-left border border-purple-200 text-sm">
-      <thead class="bg-orange-500 text-white">
-        <tr>
-          <th class="p-2">SrNo.</th>
-          <th class="p-2">Name</th>
-          <th class="p-2">Company</th>
-          <th class="p-2">City</th>
-          <th class="p-2">LinkedIn</th>
-          <th class="p-2">Status</th>
-          <th class="p-2">Req</th>
-          <th class="p-2">Sent</th>
-          <th class="p-2">Msg</th>
-          <th class="p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="leadTable" class="text-gray-700 text-sm">
-        <!-- Dynamic content -->
-      </tbody>
-    </table>
-  </div>
-</div>
+          <!-- City Filter -->
+          <select
+            id="cityFilter"
+            class="w-full sm:w-auto border border-purple-300 rounded px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">All Cities</option>
+            <option value="Surat">Surat</option>
+            <!-- <option value="Delhi">Delhi</option> -->
+          </select>
 
-<!-- Pagination -->
-<div id="pagination" class="flex flex-wrap justify-center gap-1 mb-6"></div>
+          <!-- Status Filter -->
+          <select
+            id="statusFilter"
+            class="w-full sm:w-auto border border-purple-300 rounded px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">All Status</option>
+            <option value="connected">Connected</option>
+            <option value="pending">Pending</option>
+            <option value="not contacted">Not Contacted</option>
+            <option value="unsubscribed">Unsubscribed</option>
+          </select>
 
-<!-- Script -->
-<script>
-let currentPage = 1;
-let filters = { city: '', status: '', search: '' };
+          <!-- Apply Button -->
+          <button
+            onclick="applyFilters()"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm"
+          >
+            <i class="fas fa-filter mr-1"></i> Apply
+          </button>
 
-function logout() {
-  localStorage.removeItem('jwt');
-  window.location.href = '/login.html';
-}
+          <!-- Reset Button -->
+          <button
+            onclick="resetFilters()"
+            class="border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-100"
+          >
+            <i class="fas fa-undo mr-1"></i> Reset
+          </button>
+        </div>
 
-function applyFilters() {
-  filters.city = document.getElementById('cityFilter').value;
-  filters.status = document.getElementById('statusFilter').value;
-  filters.search = document.getElementById('searchInput').value;
-  currentPage = 1;
-  loadLeads();
-}
+        <button
+          onclick="openLeadModal()"
+          class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm"
+        >
+          <i class="fas fa-plus mr-1"></i> Add Lead
+        </button>
+      </div>
 
-function resetFilters() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('cityFilter').value = '';
-  document.getElementById('statusFilter').value = '';
-  filters = { city: '', status: '', search: '' };
-  currentPage = 1;
-  loadLeads();
-}
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-400 text-sm">
+          <thead class="bg-purple-500 text-white">
+            <tr>
+              <th class="px-4 py-2 text-left">SrNo</th>
+              <th class="px-4 py-2 text-left">Name</th>
+              <th class="px-4 py-2 text-left">Company</th>
+              <th class="px-4 py-2 text-left">City</th>
+              <th class="px-4 py-2 text-left">LinkedIn</th>
+              <th class="px-4 py-2 text-left">Status</th>
+              <th class="px-4 py-2 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTable" class="divide-y divide-gray-100 bg-white">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+      <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
+    </div>
 
-function renderPagination(totalItems, itemsPerPage) {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const container = document.getElementById('pagination');
-  container.innerHTML = '';
+    <!-- Add/Edit Modal -->
+    <div
+      id="leadModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center"
+    >
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+        <button
+          onclick="closeLeadModal()"
+          class="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-lg"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        <h2
+          class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2"
+        >
+          <i class="fas fa-user-edit"></i> <span id="modalTitle">Add Lead</span>
+        </h2>
+        <form id="leadForm">
+          <input type="hidden" id="leadId" />
+          <label class="block mb-1 text-sm font-semibold text-gray-700"
+            >SrNo</label
+          >
+          <input
+            id="leadSrNo"
+            type="text"
+            class="w-full border border-gray-300 rounded px-4 py-2 mb-3"
+            required
+          />
+          <label class="block mb-1 text-sm font-semibold text-gray-700"
+            >Name</label
+          >
+          <input
+            id="leadName"
+            type="text"
+            class="w-full border border-gray-300 rounded px-4 py-2 mb-3"
+            required
+          />
+          <label class="block mb-1 text-sm font-semibold text-gray-700"
+            >Company</label
+          >
+          <input
+            id="leadCompany"
+            type="text"
+            class="w-full border border-gray-300 rounded px-4 py-2 mb-3"
+          />
+          <label class="block mb-1 text-sm font-semibold text-gray-700"
+            >City</label
+          >
+          <input
+            id="leadCity"
+            type="text"
+            class="w-full border border-gray-300 rounded px-4 py-2 mb-3"
+          />
+          <label class="block mb-1 text-sm font-semibold text-gray-700"
+            >LinkedIn</label
+          >
+          <input
+            id="leadLinkedin"
+            type="text"
+            class="w-full border border-gray-300 rounded px-4 py-2 mb-3"
+          />
+          <label class="block mb-1 text-sm font-semibold text-gray-700"
+            >Status</label
+          >
+          <input
+            id="leadStatus"
+            type="text"
+            class="w-full border border-gray-300 rounded px-4 py-2 mb-4"
+          />
 
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement('button');
-    btn.textContent = i;
-    btn.className = `px-3 py-1 border border-purple-400 rounded ${
-      i === currentPage ? 'bg-purple-600 text-white' : 'text-purple-600 bg-white hover:bg-purple-100'
-    }`;
-    btn.onclick = () => {
-      currentPage = i;
-      loadLeads();
-    };
-    container.appendChild(btn);
-  }
-}
+          <div class="flex justify-end gap-3">
+            <button
+              type="button"
+              onclick="closeLeadModal()"
+              class="px-4 py-2 text-white bg-orange-400 rounded hover:bg-orange-300"
+            >
+              <i class="fas fa-times-circle"></i> Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            >
+              <i class="fas fa-save"></i> Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-async function loadLeads() {
-  const query = new URLSearchParams({
-    page: currentPage,
-    limit: 10,
-    city: filters.city,
-    status: filters.status,
-    search: filters.search
-  });
-  const res = await fetch(`/api/leads?${query}`);
-  const { data: leads, total } = await res.json();
-  const table = document.getElementById('leadTable');
-  table.innerHTML = '';
-  leads.forEach(lead => {
-    const encoded = encodeURIComponent(JSON.stringify(lead));
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td class="p-2">${lead.SrNo || ''}</td>
-      <td class="p-2">${lead.name || ''}</td>
-      <td class="p-2">${lead.companyname || ''}</td>
-      <td class="p-2">${lead.city || ''}</td>
-      <td class="p-2"><a href="${lead.linkedin || '#'}" target="_blank" class="text-blue-600 underline">View</a></td>
-      <td class="p-2">${lead.status || ''}</td>
-      <td class="text-center">${lead.req ? '✅' : '❌'}</td>
-      <td class="text-center"><input type="checkbox" class="form-check-input sent-check" data-id="${lead._id}" ${lead.sent ? 'checked' : ''}></td>
-      <td class="text-center"><input type="checkbox" class="form-check-input msgsent-check" data-id="${lead._id}" ${lead.msgsent ? 'checked' : ''}></td>
-      <td class="text-center space-x-1">
-        <button class="text-orange-500 hover:text-orange-700"><i class="fas fa-edit"></i></button>
-        <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash-alt"></i></button>
-      </td>`;
-    table.appendChild(row);
-  });
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
 
-  renderPagination(total, 10);
-}
+    <!-- JS Placeholder -->
+ <!-- Settings Modal -->
+    <!-- <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center"> -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
 
-window.onload = loadLeads;
-</script>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+            <button onclick="closeSettingsModal()"
+                class="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-lg">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2">
+                <i class="fas fa-cog"></i> Settings
+            </h2>
+            <label for="linkedinToken" class="block mb-1 text-sm font-semibold text-gray-700">
+                <i class="fab fa-linkedin me-1"></i> LinkedIn Token
+            </label>
+            <input id="linkedinToken" type="text" placeholder="Enter your li_at token"
+                class="w-full border border-purple-300 rounded px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500">
 
-</body>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeSettingsModal()" class="px-4 py-2 text-white bg-orange-400 rounded hover:bg-orange-300">
+                    <i class="fas fa-times-circle"></i> Cancel
+                </button>
+                <button onclick="saveSettings()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                    <i class="fas fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+      // const table = document.getElementById('leadTable').querySelector('tbody');
+      function applyFilters() {
+        const search = document.getElementById("searchInput").value.trim();
+        const city = document.getElementById("cityFilter").value;
+        const status = document.getElementById("statusFilter").value;
+
+        // Call your API using these filters
+        fetchLeads(1, search, city, status);
+      }
+
+      function resetFilters() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("cityFilter").value = "";
+        document.getElementById("statusFilter").value = "";
+        fetchLeads(1);
+      }
+
+      let currentPage = 1;
+      const limit = 10;
+      let searchQuery = "";
+
+      async function fetchLeads(page = 1) {
+        currentPage = page;
+
+        const query = searchQuery.trim()
+          ? `&q=${encodeURIComponent(searchQuery.trim())}`
+          : "";
+        const res = await fetch(`/api/leads?page=${page}&limit=10${query}`);
+        const { data, total } = await res.json();
+
+        const table = document.getElementById("leadsTable");
+        table.innerHTML = "";
+
+        if (data.length === 0) {
+          table.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-500">No leads found</td></tr>`;
+          document.getElementById("pagination").innerHTML = "";
+          return;
+        }
+
+        data.forEach((lead) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+      <td class="px-4 py-2">${lead.SrNo || ""}</td>
+      <td class="px-4 py-2">${lead.name || ""}</td>
+      <td class="px-4 py-2">${lead.companyname || ""}</td>
+      <td class="px-4 py-2">${lead.city || ""}</td>
+      <td class="px-4 py-2"><a href="${
+        lead.linkedin || "#"
+      }" target="_blank" class="text-blue-600 hover:underline">View</a></td>
+      <td class="px-4 py-2">${lead.status || ""}</td>
+      <td class="px-4 py-2 text-center flex gap-2 justify-center">
+        <button class="text-purple-600 hover:text-purple-800 text-sm edit-btn"
+          data-id="${lead._id}"
+          data-name="${lead.name || ""}"
+          data-company="${lead.companyname || ""}"
+          data-city="${lead.city || ""}"
+          data-status="${lead.status || ""}">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button onclick="deleteLead('${
+          lead._id
+        }')" class="text-red-500 hover:text-red-700 text-sm">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    `;
+          table.appendChild(row);
+        });
+
+        renderPagination(total, 10);
+        bindEditButtons();
+      }
+      function handleSearch() {
+        const input = document.getElementById("searchInput").value;
+        searchQuery = input;
+        fetchLeads(1); // reset to first page
+      }
+
+      function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        searchQuery = "";
+        fetchLeads(1);
+      }
+
+      function renderPagination(total, limit) {
+        const totalPages = Math.ceil(total / limit);
+        const container = document.getElementById("pagination");
+        container.innerHTML = "";
+
+        const createBtn = (label, page, active = false, disabled = false) => {
+          const btn = document.createElement("button");
+          btn.textContent = label;
+          btn.className = `px-3 py-1 rounded border text-sm ${
+            disabled
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              : active
+              ? "bg-purple-600 text-white"
+              : "bg-white text-purple-600 border-purple-500 hover:bg-purple-100"
+          }`;
+          if (!disabled) {
+            btn.onclick = () => fetchLeads(page);
+          }
+          container.appendChild(btn);
+        };
+
+        // Previous
+        createBtn("«", currentPage - 1, false, currentPage === 1);
+
+        const range = [];
+
+        if (totalPages <= 10) {
+          for (let i = 1; i <= totalPages; i++) range.push(i);
+        } else {
+          range.push(1);
+          if (currentPage > 4) range.push("...");
+          for (
+            let i = Math.max(2, currentPage - 2);
+            i <= Math.min(totalPages - 1, currentPage + 2);
+            i++
+          ) {
+            range.push(i);
+          }
+          if (currentPage < totalPages - 3) range.push("...");
+          range.push(totalPages);
+        }
+
+        range.forEach((p) => {
+          if (p === "...") {
+            const span = document.createElement("span");
+            span.textContent = "...";
+            span.className = "px-2 text-gray-500";
+            container.appendChild(span);
+          } else {
+            createBtn(p, p, p === currentPage);
+          }
+        });
+
+        // Next
+        createBtn("»", currentPage + 1, false, currentPage === totalPages);
+      }
+
+      fetchLeads();
+      async function deleteLead(id) {
+        if (!confirm("Are you sure you want to delete this lead?")) return;
+        const res = await fetch(`/api/leads/${id}`, { method: "DELETE" });
+        const result = await res.json();
+        if (result.deletedCount > 0) {
+          showToast("Lead deleted");
+          loadLeads(currentPage);
+        } else {
+          showToast("Delete failed", "error");
+        }
+      }
+
+      function editLead(lead) {
+        document.getElementById("modalTitle").innerText = "Edit Lead";
+        document.getElementById("leadId").value = lead._id;
+        document.getElementById("leadSrNo").value = lead.SrNo || "";
+        document.getElementById("leadName").value = lead.name || "";
+        document.getElementById("leadCompany").value = lead.companyname || "";
+        document.getElementById("leadCity").value = lead.city || "";
+        document.getElementById("leadLinkedin").value = lead.linkedin || "";
+        document.getElementById("leadStatus").value = lead.status || "";
+        openLeadModal();
+      }
+
+      document
+        .getElementById("leadForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const id = document.getElementById("leadId").value;
+          const data = {
+            SrNo: document.getElementById("leadSrNo").value,
+            name: document.getElementById("leadName").value,
+            companyname: document.getElementById("leadCompany").value,
+            city: document.getElementById("leadCity").value,
+            linkedin: document.getElementById("leadLinkedin").value,
+            status: document.getElementById("leadStatus").value,
+          };
+
+          const method = id ? "PUT" : "POST";
+          const url = id ? `/api/leads/${id}` : `/api/leads`;
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          const result = await res.json();
+          if (result.acknowledged || result.modifiedCount) {
+            showToast("Lead saved!");
+            closeLeadModal();
+            loadLeads(currentPage);
+          } else {
+            showToast("Save failed", "error");
+          }
+        });
+
+      function openLeadModal() {
+        document.getElementById("modalTitle").innerText = "Add Lead";
+        document.getElementById("leadForm").reset();
+        document.getElementById("leadId").value = "";
+        document.getElementById("leadModal").classList.remove("hidden");
+      }
+
+      function closeLeadModal() {
+        document.getElementById("leadModal").classList.add("hidden");
+      }
+
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `px-4 py-2 rounded shadow text-white text-sm animate-slide-in ${
+          type === "success" ? "bg-green-600" : "bg-red-600"
+        }`;
+         toast.innerHTML = message; 
+        const container = document.getElementById("toastContainer");
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.classList.add("opacity-0");
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+  function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+            fetch('/api/settings/linkedin-token')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('linkedinToken').value = data.linkedinToken || '';
+                });
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        async function saveSettings() {
+            const token = document.getElementById('linkedinToken').value.trim();
+            const res = await fetch('/api/settings/linkedin-token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ linkedinToken: token })
+            });
+            const result = await res.json();
+
+              if (result.success) {
+                // const msg = ;
+                showToast(`<i class="fa-solid fa-circle-check"></i> Token saved!`);
+                closeSettingsModal();
+            } else {
+                showToast(`<i class="fa-solid fa-circle-xmark"></i> Failed to save`, 'error');
+            }
+        }
+      // loadLeads();
+    </script>
+
+    <style>
+      @keyframes slide-in {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-slide-in {
+        animation: slide-in 0.3s ease-out;
+        transition: opacity 0.3s ease-in;
+      }
+    </style>
+  </body>
 </html>
