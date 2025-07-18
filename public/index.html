@@ -31,424 +31,675 @@
     </nav>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white p-4 shadow rounded border-l-4 border-orange-500">
-            <h2 class="text-lg font-semibold text-gray-600">Total Leads</h2>
-            <p id="totalLeads" class="text-2xl font-bold text-purple-700">...</p>
-        </div>
-        <div class="bg-white p-4 shadow rounded border-l-4 border-orange-500">
-            <h2 class="text-lg font-semibold text-gray-600">Researched</h2>
-            <p id="researched" class="text-2xl font-bold text-purple-700">...</p>
-        </div>
-        <div class="bg-white p-4 shadow rounded border-l-4 border-orange-500">
-            <h2 class="text-lg font-semibold text-gray-600">Drafted</h2>
-            <p id="drafted" class="text-2xl font-bold text-purple-700">...</p>
-        </div>
-        <div class="bg-white p-4 shadow rounded border-l-4 border-yellow-500">
-            <h2 class="text-lg font-semibold text-gray-600">Not Contacted</h2>
-            <p id="notContactedLeads" class="text-2xl font-bold text-purple-700">...</p>
-        </div>
-        <div class="bg-white p-4 shadow rounded border-l-4 border-green-500">
-            <h2 class="text-lg font-semibold text-gray-600">Connected</h2>
-            <p id="connectedLeads" class="text-2xl font-bold text-purple-700">...</p>
-        </div>
-        <div class="bg-white p-4 shadow rounded border-l-4 border-green-500">
-            <h2 class="text-lg font-semibold text-gray-600">Message Sent</h2>
-            <p id="sent" class="text-2xl font-bold text-purple-700">...</p>
-        </div>
+    <!-- Summary Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+  <div class="bg-white p-4 shadow rounded border-l-4 border-orange-500">
+    <h2 class="text-lg font-semibold text-gray-600">Total Leads</h2>
+    <p id="totalLeads" class="text-2xl font-bold text-purple-700">...</p>
+  </div>
+  <div class="bg-white p-4 shadow rounded border-l-4 border-orange-500">
+    <h2 class="text-lg font-semibold text-gray-600">Researched</h2>
+    <p id="researched" class="text-2xl font-bold text-purple-700">...</p>
+  </div>
+  <div class="bg-white p-4 shadow rounded border-l-4 border-orange-500">
+    <h2 class="text-lg font-semibold text-gray-600">Drafted</h2>
+    <p id="drafted" class="text-2xl font-bold text-purple-700">...</p>
+  </div>
+  <div class="bg-white p-4 shadow rounded border-l-4 border-yellow-500">
+    <h2 class="text-lg font-semibold text-gray-600">Not Contacted</h2>
+    <p id="notContactedLeads" class="text-2xl font-bold text-purple-700">...</p>
+  </div>
+  <div class="bg-white p-4 shadow rounded border-l-4 border-green-500">
+    <h2 class="text-lg font-semibold text-gray-600">Connected</h2>
+    <p id="connectedLeads" class="text-2xl font-bold text-purple-700">...</p>
+  </div>
+  <div class="bg-white p-4 shadow rounded border-l-4 border-green-500">
+    <h2 class="text-lg font-semibold text-gray-600">Message Sent</h2>
+    <p id="sent" class="text-2xl font-bold text-purple-700">...</p>
+  </div>
+</div>
+
+<!-- Today's Leads Table Section -->
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-xl font-bold text-orange-600 flex items-center gap-2">
+    <i class="fas fa-calendar-day"></i> Today's Researched Leads
+  </h2>
+  
+<div class="flex gap-4 items-center mb-4">
+  <label class="text-sm font-medium">From:
+    <input type="date" id="filterStartDate" class="ml-2 px-2 py-1 border rounded">
+  </label>
+  <label class="text-sm font-medium">To:
+    <input type="date" id="filterEndDate" class="ml-2 px-2 py-1 border rounded">
+  </label>
+  <button onclick="filterStatsByDate()" class="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700">
+    <i class="fas fa-filter mr-1"></i> Apply 
+  </button>
+</div>
+  <div class="flex flex-wrap items-center gap-4">
+    
+    <button onclick="assignTodaysLeads()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm">
+      <i class="fas fa-random mr-1"></i> Assign for Today
+    </button>
+
+    <div class="flex flex-wrap gap-4 text-sm font-semibold text-gray-700">
+     
+      <div><i class="fas fa-paper-plane text-gray-600 mr-1"></i> Sent: <span id="countSent" class="text-purple-700">0</span></div>
+<div><i class="fas fa-clock text-red-600 mr-1"></i> Pending: <span id="countPending" class="text-orange-600">0</span></div>
+<div><i class="fas fa-check-circle text-green-600 mr-1"></i> Connected: <span id="countConnected" class="text-green-600">0</span></div>
 
     </div>
-<!-- Edit Modal -->
-<div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+    
+  </div>
+  
+</div>
+
+<!-- Leads Table -->
+<div class="overflow-x-auto">
+  <table class="min-w-full divide-y divide-gray-400 text-sm bg-white rounded shadow">
+    <thead class="bg-purple-500 text-white">
+      <tr>
+        <th class="px-4 py-2 text-left font-semibold">SrNo</th>
+        <th class="px-4 py-2 text-left font-semibold">Name</th>
+        <th class="px-4 py-2 text-left font-semibold">Company</th>
+        <th class="px-4 py-2 text-left font-semibold">City</th>
+        <th class="px-4 py-2 text-left font-semibold">LinkedIn</th>
+        <th class="px-4 py-2 text-left font-semibold">Status</th>
+        <th class="px-4 py-2 text-center font-semibold">Req Accepted</th>
+        <th class="px-4 py-2 text-center font-semibold">Req Sent</th>
+        <th class="px-4 py-2 text-center font-semibold">Msg Sent</th>
+        <th class="px-4 py-2 text-center font-semibold">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="todaysLeadsTable" class="divide-y divide-gray-200">
+      <!-- Rows injected by JS -->
+    </tbody>
+  </table>
+</div>
+<div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
+<!-- Edit Lead Modal -->
+<div id="editLeadModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 relative">
+    <!-- Close Button -->
     <button onclick="closeEditModal()" class="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-lg">
       <i class="fas fa-times"></i>
     </button>
-    <h2 class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2">
-      <i class="fas fa-pen"></i> Edit Lead
+
+    <h2 class="text-2xl font-bold text-purple-700 mb-6 flex items-center gap-2">
+      <i class="fas fa-user-edit"></i> Edit Lead
     </h2>
-    <form id="editForm">
-      <input type="hidden" id="editId" />
 
-      <label class="block mb-1 text-sm font-semibold text-gray-700">SrNo</label>
-      <input id="editSrNo" type="text" class="w-full border border-gray-300 rounded px-4 py-2 mb-3">
-      <label class="block mb-1 text-sm font-semibold text-gray-700">Name</label>
-      <input id="editName" type="text" class="w-full border border-gray-300 rounded px-4 py-2 mb-3">
+    <form id="leadForm" class="space-y-4">
+      <input type="hidden" id="_id" />
 
-      <label class="block mb-1 text-sm font-semibold text-gray-700">Company</label>
-      <input id="editCompany" type="text" class="w-full border border-gray-300 rounded px-4 py-2 mb-3">
-
-      <label class="block mb-1 text-sm font-semibold text-gray-700">City</label>
-      <input id="editCity" type="text" class="w-full border border-gray-300 rounded px-4 py-2 mb-3">
-      <label class="block mb-1 text-sm font-semibold text-gray-700">LinkedIn</label>
-<input id="editLinkedin" type="text" class="w-full border border-gray-300 rounded px-4 py-2 mb-3">
-
-
-      <label class="block mb-1 text-sm font-semibold text-gray-700">Status</label>
-      <input id="editStatus" type="text" class="w-full border border-gray-300 rounded px-4 py-2 mb-4">
-
-      <div class="flex justify-end gap-3">
-        <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-white bg-orange-400 rounded hover:bg-orange-300">
-          <i class="fas fa-times-circle"></i> Cancel
-        </button>
-        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-          <i class="fas fa-save"></i> Update
-        </button>
+      <!-- Grid for Input Fields -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label for="SrNo" class="block text-sm font-semibold text-gray-700 mb-1">SrNo</label>
+          <input id="SrNo" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+        <div>
+          <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+          <input id="name" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+        <div>
+          <label for="firstname" class="block text-sm font-semibold text-gray-700 mb-1">Firstname</label>
+          <input id="firstname" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
       </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label for="designation" class="block text-sm font-semibold text-gray-700 mb-1">Designation</label>
+          <input id="designation" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+        <div>
+          <label for="companyname" class="block text-sm font-semibold text-gray-700 mb-1">Company</label>
+          <input id="companyname" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+        <div>
+          <label for="city" class="block text-sm font-semibold text-gray-700 mb-1">City</label>
+          <input id="city" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label for="linkedin" class="block text-sm font-semibold text-gray-700 mb-1">LinkedIn</label>
+          <input id="linkedin" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+        <div>
+          <label for="connectedBy" class="block text-sm font-semibold text-gray-700 mb-1">Connected By</label>
+          <input id="connectedBy" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+        <!-- <div>
+          <label for="status" class="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+          <input id="status" type="text" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500" />
+        </div> -->
+        <div>
+    <label for="status" class="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+    <select id="status"
+      class="w-full border border-purple-300 rounded px-4 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+      <option value="">Select Status</option>
+      <option value="connected">Connected</option>
+      <option value="pending">Pending</option>
+      <option value="not contacted">Not Contacted</option>
+      <option value="unsubscribed">Unsubscribed</option>
+    </select>
+  </div>
+      </div>
+
+      <!-- Overview -->
+      <div>
+        <label for="Overview" class="block text-sm font-semibold text-gray-700 mb-1">Overview</label>
+        <textarea id="Overview" rows="4" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500 resize-y"></textarea>
+      </div>
+
+      <!-- Message Draft (Company) -->
+      <div class="hidden">
+        <label for="msg_draft_Company" class="block text-sm font-semibold text-gray-700 mb-1">Message Draft (Company)</label>
+        <textarea id="msg_draft_Company" rows="4" class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-2 focus:ring-purple-500 resize-y"></textarea>
+      </div>
+
+      <!-- Message Draft (Individual) -->
+      <div>
+        <label for="msg_draft_Individual" class="block text-sm font-semibold text-gray-700 mb-1">
+          Message Draft (Individual)
+          <button type="button" class="text-xs ml-2 text-purple-600 hover:text-purple-800"
+            onclick="copyToClipboard('msg_draft_Individual')">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+        </label>
+        <textarea id="msg_draft_Individual" rows="4" disabled
+          class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 text-gray-600 resize-y"></textarea>
+      </div>
+
+      <!-- Flags -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+        <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <input type="checkbox" id="Researched" class="h-4 w-4 text-green-600 rounded border-gray-300 focus:ring-green-500" disabled />
+          Researched
+        </label>
+
+        <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <input type="checkbox" id="req" class="h-4 w-4 text-orange-500 rounded border-gray-300 focus:ring-orange-400" />
+          Req Accepted
+        </label>
+     
+        <!-- Hidden request accepted flag -->
+  <div class="hidden flex items-center gap-2">
+    <input type="checkbox" id="sent"
+      class="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500" />
+    <label for="sent" class="text-sm text-gray-700 font-medium">Request Sent</label>
+  </div>
+
+  <div class="hidden flex items-center gap-2">
+    <input type="checkbox" id="msgsent"
+      class="h-4 w-4 text-orange-500 border-gray-300 rounded focus:ring-orange-400" />
+    <label for="msgsent" class="text-sm text-gray-700 font-medium">Message Sent</label>
+  </div>
+      </div>
+
+      <!-- Submit Buttons -->
+       <button type="submit"
+          class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-lg font-semibold">
+          <i class="fas fa-save mr-2"></i> Update Lead
+        </button>
+      
     </form>
   </div>
 </div>
 
 
-    <!-- Today's Leads Table -->
-    <div class="flex justify-between items-center mb-4">
-  <h2 class="text-xl font-bold text-orange-600 flex items-center gap-2">
-    <i class="fas fa-calendar-day "></i> Today's Researched Leads
-  </h2>
-  <div class="flex gap-3">
-    <button onclick="assignTodaysLeads()" class="bg-purple-600 text-white px-3 py-2 rounded hover:bg-purple-700 text-sm">
-      <i class="fas fa-random mr-1"></i> Assign for Today
-    </button>
-    <div class="flex gap-4 text-sm text-gray-700 font-semibold items-center">
-      <div><i class="fas fa-paper-plane text-grey-600 mr-1"></i> Sent: <span id="countSent" class="text-purple-700">0</span></div>
-      <div><i class="fas fa-clock text-red-600 mr-1"></i>  Pending: <span id="countPending" class="text-orange-600">0</span></div>
-      <div><i class="fas fa-check-circle text-green-600 mr-1"></i> Connected: <span id="countConnected" class="text-green-600">0</span></div>
+<!-- Settings Modal -->
+  <!-- <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center"> -->
+  <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+      <button onclick="closeSettingsModal()" class="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-lg">
+        <i class="fas fa-times"></i>
+      </button>
+      <h2 class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2">
+        <i class="fas fa-cog"></i> Settings
+      </h2>
+      <label for="linkedinToken" class="block mb-1 text-sm font-semibold text-gray-700">
+        <i class="fab fa-linkedin me-1"></i> LinkedIn Token
+      </label>
+      <input id="linkedinToken" type="text" placeholder="Enter your li_at token"
+        class="w-full border border-purple-300 rounded px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500">
+
+      <div class="flex justify-end gap-3">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 text-white bg-orange-400 rounded hover:bg-orange-300">
+          <i class="fas fa-times-circle"></i> Cancel
+        </button>
+        <button onclick="saveSettings()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+          <i class="fas fa-save"></i> Save
+        </button>
+      </div>
     </div>
   </div>
-</div>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-400 text-sm">
-                <thead class="bg-purple-500 text-white">
-                    <tr>
-                        <th class="px-4 py-2 font-semibold text-left">SrNo.</th>
-                        <th class="px-4 py-2 font-semibold text-left">Name</th>
-                        <th class="px-4 py-2 font-semibold text-left">Company</th>
-                        <th class="px-4 py-2 font-semibold text-left">City</th>
-                        <th class="px-4 py-2 font-semibold text-left">LinkedIn</th>
-                        <th class="px-4 py-2 font-semibold text-left">Status</th>
-                        <th class="px-4 py-2 font-semibold text-center">Req Accepted</th>
-                        <th class="px-4 py-2 font-semibold text-center">Req Sent</th>
-                        <th class="px-4 py-2 font-semibold text-center">Msg Sent</th>
-                        <th class="px-4 py-2 font-semibold text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="todaysLeadsTable" class="divide-y divide-gray-200 bg-white">
-                    <!-- JS will populate rows here -->
-                </tbody>
-            </table>
-        </div>
-        <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
-    </div>
-
-    <!-- Settings Modal -->
-    <!-- <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center"> -->
-    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
-            <button onclick="closeSettingsModal()"
-                class="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-lg">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 class="text-xl font-bold text-purple-700 mb-4 flex items-center gap-2">
-                <i class="fas fa-cog"></i> Settings
-            </h2>
-            <label for="linkedinToken" class="block mb-1 text-sm font-semibold text-gray-700">
-                <i class="fab fa-linkedin me-1"></i> LinkedIn Token
-            </label>
-            <input id="linkedinToken" type="text" placeholder="Enter your li_at token"
-                class="w-full border border-purple-300 rounded px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500">
-
-            <div class="flex justify-end gap-3">
-                <button onclick="closeSettingsModal()" class="px-4 py-2 text-white bg-orange-400 rounded hover:bg-orange-300">
-                    <i class="fas fa-times-circle"></i> Cancel
-                </button>
-                <button onclick="saveSettings()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
-                    <i class="fas fa-save"></i> Save
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Scripts -->
     <script>
-     document.getElementById('editForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
 
-  const id = document.getElementById('editId').value;
-  const updatedData = {
-    SrNo: document.getElementById('editSrNo').value.trim(),
-    name: document.getElementById('editName').value.trim(),
-    companyname: document.getElementById('editCompany').value.trim(),
-    city: document.getElementById('editCity').value.trim(),
-    linkedin: document.getElementById('editLinkedin').value.trim(),
-    status: document.getElementById('editStatus').value.trim(),
-  };
+async function assignTodaysLeads() {
+  const res = await fetch(`/api/todays-leads?page=1&limit=50`);
+  const { data } = await res.json();
 
-  const res = await fetch(`/api/leads/${id}`, {
-    method: 'PUT',
+  const ids = data.map(lead => lead._id);
+
+  if (ids.length === 0) {
+    showToast("No leads to assign", "error");
+    return;
+  }
+
+  const assignRes = await fetch('/api/assign-leads-date', {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updatedData)
+    body: JSON.stringify({ ids })
   });
 
-  const result = await res.json();
-  if (result.modifiedCount > 0 || result.acknowledged) {
-    showToast(`<i class="fa-solid fa-check-circle"></i> Lead updated!`);
-    closeEditModal();
-    loadTodaysLeads(currentPage);
-  } else {
-    showToast(`<i class="fa-solid fa-times-circle"></i> Update failed`, 'error');
-  }
-});
+  const result = await assignRes.json();
 
-function bindEditButtons() {
-  document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      openEditModal({
-        _id: btn.dataset.id,
-        srno: btn.dataset.srno,
-        name: btn.dataset.name,
-        companyname: btn.dataset.company,
-        city: btn.dataset.city,
-        status: btn.dataset.status
+  if (result.updatedCount > 0) {
+    showToast(`<i class="fa-solid fa-check-circle"></i> Assigned ${result.updatedCount} leads!`);
+    loadTodaysLeads(); // refresh table
+    loadTodaysStats(); // refresh counters
+  } else {
+    showToast("Assignment failed", "error");
+  }
+}
+
+    async function loadTodaysStats() {
+  try {
+    const res = await fetch('/api/todays-leads-counts');
+    const { sent, pending, connected } = await res.json();
+
+    document.getElementById('countSent').textContent = sent || 0;
+    document.getElementById('countPending').textContent = pending || 0;
+    document.getElementById('countConnected').textContent = connected || 0;
+  } catch (err) {
+    console.error("Failed to load today's stats", err);
+  }
+}
+
+function bindCheckboxUpdates() {
+  document.querySelectorAll(".sent-check").forEach(cb => {
+    cb.addEventListener("change", async () => {
+      const id = cb.getAttribute("data-id");
+      const value = cb.checked;
+      await updateFlag(id, "sent", value);
+    });
+  });
+
+  document.querySelectorAll(".msgsent-check").forEach(cb => {
+    cb.addEventListener("change", async () => {
+      const id = cb.getAttribute("data-id");
+      const value = cb.checked;
+      await updateFlag(id, "msgsent", value);
+    });
+  });
+}
+async function updateFlag(id, field, value) {
+  try {
+    const res = await fetch(`/api/leads/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: value })
+    });
+
+    const result = await res.json();
+
+    if (result.modifiedCount === 0) {
+      showToast(`Failed to update ${field}`, 'error');
+    }
+  } catch (err) {
+    console.error(`Failed to update ${field}`, err);
+    showToast(`Error updating ${field}`, 'error');
+  }
+}
+
+  let currentPage = 1;
+
+  document.getElementById('leadForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const id = document.getElementById('_id').value;
+    
+ const updatedData = {
+  SrNo: Number(document.getElementById('SrNo').value.trim()),
+  name: document.getElementById('name').value.trim(),
+  firstname: document.getElementById('firstname').value.trim(),
+  designation: document.getElementById('designation').value.trim(),
+  companyname: document.getElementById('companyname').value.trim(),
+  city: document.getElementById('city').value.trim(),
+  linkedin: document.getElementById('linkedin').value.trim(),
+  connectedBy: document.getElementById('connectedBy').value.trim(),
+  status: document.getElementById('status').value.trim(),
+  Overview: document.getElementById('Overview').value.trim(),
+  msg_draft: {
+    Individual: document.getElementById('msg_draft_Individual')?.value?.trim() || ''
+  },
+  Researched: !!document.getElementById('Researched').checked,
+  sent: !!document.getElementById('sent').checked,
+  req: !!document.getElementById('req').checked,
+  msgsent: !!document.getElementById('msgsent').checked,
+  // ✅ Preserve original date
+  Date: document.getElementById('editLeadModal').dataset.originalDate
+};
+
+
+
+
+    const res = await fetch(`/api/leads/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedData)
+    
       });
-    });
-  });
-}
 
-
-        let currentPage = 1;
-
-        async function loadSummary() {
-            const res = await fetch('/api/dashboard-summary');
-            const { total, connected, sent, notContacted, researched, drafted } = await res.json();
-            document.getElementById('totalLeads').textContent = total;
-            document.getElementById('drafted').textContent = drafted;
-            document.getElementById('sent').textContent = sent;
-            document.getElementById('researched').textContent = researched;
-            document.getElementById('connectedLeads').textContent = connected;
-            document.getElementById('notContactedLeads').textContent = notContacted;
-        }
-
-       async function loadTodaysLeads(page = 1) {
-    currentPage = page; // ✅ this keeps track globally
-    const res = await fetch(`/api/todays-leads?page=${page}&limit=10`);
-    const { data, total } = await res.json();
-
-    const table = document.getElementById('todaysLeadsTable');
-    table.innerHTML = '';
-
-    if (data.length === 0) {
-        table.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-gray-500">No leads found</td></tr>`;
-        document.getElementById('pagination').innerHTML = '';
-        return;
-    }
-
-    data.forEach(lead => {
-        const row = document.createElement('tr');
-        row.className = "hover:bg-gray-50";
-        row.innerHTML = `
-          <td class="px-4 py-2">${lead.SrNo || ''}</td>
-          <td class="px-4 py-2">${lead.name || ''}</td>
-          <td class="px-4 py-2">${lead.companyname || ''}</td>
-          <td class="px-4 py-2">${lead.city || ''}</td>
-          <td class="px-4 py-2"><a href="${lead.linkedin || '#'}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
-          <td class="px-4 py-2">${lead.status || ''}</td>
-          <td class="px-4 py-2 text-center">${lead.req ? '<i class="fas fa-check text-green-600"></i>' : '<i class="fas fa-times text-red-500"></i>'}</td>
-          <td class="px-4 py-2 text-center">${lead.sent ? '<i class="fas fa-check text-green-600"></i>' : '<i class="fas fa-times text-red-500"></i>'}</td>
-          <td class="px-4 py-2 text-center">${lead.msgsent ? '<i class="fas fa-check text-green-600"></i>' : '<i class="fas fa-times text-red-500"></i>'}</td>
-         <td class="px-4 py-2 text-center flex gap-2 justify-center">
-    <button class="text-purple-600 hover:text-purple-800 text-sm edit-btn"
-      data-id="${lead._id}"
-      data-name="${lead.name || ''}"
-      data-company="${lead.companyname || ''}"
-      data-city="${lead.city || ''}"
-      data-status="${lead.status || ''}">
-      <i class="fas fa-edit"></i>
-    </button>
-    <button onclick="deleteLead('${lead._id}')" class="text-red-500 hover:text-red-700 text-sm">
-      <i class="fas fa-trash-alt"></i>
-    </button>
-  </td>
-
-        `;
-        table.appendChild(row);
-    });
-    const max = 50;
-    renderPagination(max, 10);
-    bindEditButtons()
-}
-
-async function deleteLead(id) {
-  if (!confirm("Are you sure you want to delete this lead?")) return;
-  const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
-  const result = await res.json();
-  if (result.deletedCount > 0) {
-    showToast(`<i class="fa-solid fa-trash"></i> Lead deleted`);
-    loadTodaysLeads(currentPage);
-  } else {
-    showToast(`<i class="fa-solid fa-triangle-exclamation"></i> Delete failed`, 'error');
-  }
-}
-
-      function renderPagination(total, limit) {
-  const totalPages = Math.ceil(total / limit);
-  const container = document.getElementById('pagination');
-  container.innerHTML = '';
-
-  const maxButtonsToShow = 7; // including first, last, current ±1, prev/next
-
-  const createButton = (label, page, isActive = false, isDisabled = false) => {
-    const btn = document.createElement('button');
-    btn.textContent = label;
-    btn.className = `px-3 py-1 rounded border text-sm transition ${
-      isDisabled ? 'cursor-not-allowed bg-gray-200 text-gray-400' :
-      isActive ? 'bg-purple-600 text-white' :
-      'bg-white border-purple-500 text-purple-600 hover:bg-purple-100'
-    }`;
-    if (!isDisabled) {
-      btn.onclick = () => {
-        currentPage = page;
-        loadTodaysLeads(page);
-      };
-    }
-    container.appendChild(btn);
-  };
-
-  // Previous button
-  createButton('«', currentPage - 1, false, currentPage === 1);
-
-  // Page buttons with ellipses logic
-  const range = [];
-  if (totalPages <= 10) {
-    for (let i = 1; i <= totalPages; i++) range.push(i);
-  } else {
-    range.push(1);
-    if (currentPage > 4) range.push('...');
-    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-      range.push(i);
-    }
-    if (currentPage < totalPages - 3) range.push('...');
-    range.push(totalPages);
-  }
-
-  range.forEach(p => {
-    if (p === '...') {
-      const dots = document.createElement('span');
-      dots.textContent = '...';
-      dots.className = 'px-2 text-gray-500';
-      container.appendChild(dots);
+    const result = await res.json();
+    if (result.modifiedCount > 0 || result.acknowledged) {
+      showToast(`<i class="fa-solid fa-check-circle"></i> Lead updated!`);
+      closeEditModal();
+      loadTodaysLeads(currentPage);
     } else {
-      createButton(p, p, p === currentPage);
+      showToast(`<i class="fa-solid fa-times-circle"></i> Update failed`, 'error');
     }
   });
 
-  // Next button
-  createButton('»', currentPage + 1, false, currentPage === totalPages);
+  function openEditModal(lead) {
+    document.getElementById('editLeadModal').dataset.originalDate = lead.Date || '';
+
+    document.getElementById('_id').value = lead._id || '';
+    document.getElementById('SrNo').value = lead.SrNo || '';
+    document.getElementById('name').value = lead.name || '';
+    document.getElementById('firstname').value = lead.firstname || '';
+    document.getElementById('designation').value = lead.designation || '';
+    document.getElementById('companyname').value = lead.companyname || '';
+    document.getElementById('city').value = lead.city || '';
+    document.getElementById('linkedin').value = lead.linkedin || '';
+    document.getElementById('connectedBy').value = lead.connectedBy || '';
+    document.getElementById('status').value = lead.status || '';
+    document.getElementById('Overview').value = lead.Overview || '';
+    // document.getElementById('msg_draft_Company').value = lead.msg_draft?.Company || '';
+    document.getElementById('msg_draft_Individual').value = lead.msg_draft?.Individual || '';
+    document.getElementById('Researched').checked = !!lead.Researched;
+    document.getElementById('sent').checked = !!lead.sent;
+    document.getElementById('req').checked = !!lead.req;
+    document.getElementById('msgsent').checked = !!lead.msgsent;
+
+    document.getElementById('editLeadModal').classList.remove('hidden');
+  }
+
+  function closeEditModal() {
+    document.getElementById('editLeadModal').classList.add('hidden');
+  }
+
+  function bindEditButtons() {
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+      const encoded = btn.getAttribute("data-lead");
+      if (!encoded) return;
+      try {
+        const lead = JSON.parse(decodeURIComponent(encoded));
+        btn.addEventListener("click", () => openEditModal(lead));
+      } catch (err) {
+        console.error("Error decoding lead", err);
+      }
+    });
+  }
+// // srno validation
+//  const srNoValue = document.getElementById('SrNo').value.trim();
+// const srNo = Number(srNoValue);
+// if (isNaN(srNo)) {
+//   showToast("Invalid SrNo: must be a number", "error");
+//   return;
+// }
+ 
+  async function loadTodaysLeads(page = 1) {
+  currentPage = page;
+
+  // ✅ Set limit to 10 leads per page, but max 50 leads overall
+  const res = await fetch(`/api/todays-leads?page=${page}&limit=10`);
+  const { data, total } = await res.json();
+
+  const maxLeads = 50; // Cap to first 50 leads only
+  const filteredData = data.slice(0, maxLeads);
+  const totalToPaginate = Math.min(total, maxLeads);
+
+  const table = document.getElementById('todaysLeadsTable');
+  table.innerHTML = '';
+
+  if (filteredData.length === 0) {
+    table.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-gray-500">No leads found</td></tr>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  filteredData.forEach(lead => {
+    const row = document.createElement('tr');
+    row.className = "hover:bg-gray-50";
+    row.innerHTML = `
+      <td class="px-4 py-2">${lead.SrNo || ''}</td>
+      <td class="px-4 py-2">${lead.name || ''}</td>
+      <td class="px-4 py-2">${lead.companyname || ''}</td>
+      <td class="px-4 py-2">${lead.city || ''}</td>
+      <td class="px-4 py-2"><a href="${lead.linkedin || '#'}" target="_blank" class="text-blue-600 hover:underline">View</a></td>
+      <td class="px-4 py-2">${lead.status || ''}</td>
+      <td class="px-4 py-2 text-center">${lead.req ? '<i class="fas fa-check text-green-600"></i>' : '<i class="fas fa-times text-red-500"></i>'}</td>
+      <td class="px-4 py-2 text-center">
+       <input type="checkbox"
+  class="sent-check cursor-pointer h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+  data-id="${lead._id}"
+  ${lead.sent ? 'checked' : ''} />
+
+      </td>
+      <td class="px-4 py-2 text-center">
+        
+        <input type="checkbox"
+  class="msgsent-check cursor-pointer h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+  data-id="${lead._id}"
+  ${lead.msgsent ? 'checked' : ''} />
+      <td class="px-4 py-2 text-center flex items-center justify-center gap-3">
+        <button class="text-purple-500 hover:text-purple-600 edit-btn text-sm" data-lead="${encodeURIComponent(JSON.stringify(lead))}" title="Edit Lead">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button onclick="deleteLead('${lead._id}')" class="text-red-500 hover:text-red-600 text-sm" title="Delete Lead">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>
+    `;
+    table.appendChild(row);
+  });
+
+  // renderPagination(totalToPaginate, 10); //  Only show up to 50 leads
+  renderPagination(Math.min(total, 50), 10);
+
+  bindEditButtons();
+  bindCheckboxUpdates();
 }
 
 
+  async function deleteLead(id) {
+    if (!confirm("Are you sure you want to delete this lead?")) return;
 
-        function openSettingsModal() {
-            document.getElementById('settingsModal').classList.remove('hidden');
-            fetch('/api/settings/linkedin-token')
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('linkedinToken').value = data.linkedinToken || '';
-                });
-        }
+    const res = await fetch(`/api/leads/${id}`, { method: "DELETE" });
+    const result = await res.json();
 
-        function closeSettingsModal() {
-            document.getElementById('settingsModal').classList.add('hidden');
-        }
+    if (result.deletedCount > 0) {
+      showToast("Lead deleted");
+      loadTodaysLeads(currentPage);
+    } else {
+      showToast("Delete failed", "error");
+    }
+  }
 
-        async function saveSettings() {
-            const token = document.getElementById('linkedinToken').value.trim();
-            const res = await fetch('/api/settings/linkedin-token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ linkedinToken: token })
-            });
-            const result = await res.json();
+  function renderPagination(total, limit) {
+    const totalPages = Math.ceil(total / limit);
+    const container = document.getElementById('pagination');
+    container.innerHTML = '';
 
-            if (result.success) {
-                const msg = `<i class="fa-solid fa-circle-check"></i> Token saved!`;
-                showToast(msg);
-                closeSettingsModal();
-            } else {
-                showToast(`<i class="fa-solid fa-circle-xmark"></i> Failed to save`, 'error');
-            }
+    const createButton = (label, page, isActive = false, isDisabled = false) => {
+      const btn = document.createElement('button');
+      btn.textContent = label;
+      btn.className = `px-3 py-1 rounded border text-sm transition ${
+        isDisabled ? 'cursor-not-allowed bg-gray-200 text-gray-400' :
+        isActive ? 'bg-purple-600 text-white' :
+        'bg-white border-purple-500 text-purple-600 hover:bg-purple-100'
+      }`;
+      if (!isDisabled) {
+        btn.onclick = () => {
+          currentPage = page;
+          loadTodaysLeads(page);
+        };
+      }
+      container.appendChild(btn);
+    };
 
-        }
+    createButton('«', currentPage - 1, false, currentPage === 1);
 
-        loadTodaysLeads();
-        loadSummary();
-    </script>
-    <script>
-        function showToast(message, type = 'success') {
+    const range = [];
+    if (totalPages <= 10) {
+      for (let i = 1; i <= totalPages; i++) range.push(i);
+    } else {
+      range.push(1);
+      if (currentPage > 4) range.push('...');
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        range.push(i);
+      }
+      if (currentPage < totalPages - 3) range.push('...');
+      range.push(totalPages);
+    }
+
+    range.forEach(p => {
+      if (p === '...') {
+        const dots = document.createElement('span');
+        dots.textContent = '...';
+        dots.className = 'px-2 text-gray-500';
+        container.appendChild(dots);
+      } else {
+        createButton(p, p, p === currentPage);
+      }
+    });
+
+    createButton('»', currentPage + 1, false, currentPage === totalPages);
+  }
+
+  function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `px-4 py-2 rounded shadow text-white text-sm animate-slide-in ${
-        type === 'success' ? 'bg-green-600' : 'bg-red-600'
+      type === 'success' ? 'bg-green-600' : 'bg-red-600'
     }`;
-
-    toast.innerHTML = message; // ✅ allow icons and formatting
-
+    toast.innerHTML = message;
     const container = document.getElementById('toastContainer');
     container.appendChild(toast);
-
     setTimeout(() => {
-        toast.classList.add('opacity-0');
-        setTimeout(() => toast.remove(), 300);
+      toast.classList.add('opacity-0');
+      setTimeout(() => toast.remove(), 300);
     }, 3000);
+  }
+
+  // Daet filter
+function filterStatsByDate() {
+  const start = document.getElementById('startDate')?.value;
+  const end = document.getElementById('endDate')?.value;
+
+  if (!start || !end) return;
+
+  fetch(`/api/leads-stats-by-date?start=${start}&end=${end}`)
+    .then(res => res.json())
+    .then(({ sent, connected, pending, total }) => {
+      document.getElementById('countSent').textContent = sent ?? 0;
+      document.getElementById('countConnected').textContent = connected ?? 0;
+      document.getElementById('countPending').textContent = pending ?? 0;
+      // Optional: show total too if needed
+    })
+    .catch(err => console.error("Date filter error:", err));
 }
-function openEditModal(lead) {
-  document.getElementById('editId').value = lead._id;
-  document.getElementById('editSrNo').value = lead.SrNo || '';
-  document.getElementById('editName').value = lead.name || '';
-  document.getElementById('editCompany').value = lead.companyname || '';
-  document.getElementById('editCity').value = lead.city || '';
-  document.getElementById('editLinkedin').value = lead.linkedin || '';
-  document.getElementById('editStatus').value = lead.status || '';
-  document.getElementById('editModal').classList.remove('hidden');
-}
 
-function closeEditModal() {
-  document.getElementById('editModal').classList.add('hidden');
-}
+window.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0];
+  const start = document.getElementById('startDate');
+  const end = document.getElementById('endDate');
 
-document.getElementById('editForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const id = document.getElementById('editId').value;
-  const updatedData = {
-    name: document.getElementById('editName').value.trim(),
-    companyname: document.getElementById('editCompany').value.trim(),
-    city: document.getElementById('editCity').value.trim(),
-    status: document.getElementById('editStatus').value.trim(),
-  };
-
-  const res = await fetch(`/api/leads/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updatedData)
-  });
-
-  const result = await res.json();
-  if (result.modifiedCount > 0 || result.acknowledged) {
-    showToast(`<i class="fa-solid fa-check-circle"></i> Lead updated!`);
-    closeEditModal();
-    loadTodaysLeads(currentPage);
-  } else {
-    showToast(`<i class="fa-solid fa-times-circle"></i> Update failed`, 'error');
+  if (start && end) {
+    start.value = today;
+    end.value = today;
+    filterStatsByDate(); // auto-load today's stats
   }
 });
 
 
-// function closeEditModal() {
-//     document.getElementById('editModal').classList.add('hidden');
-// }
 
-    </script>
+
+
+  async function loadSummary() {
+    const res = await fetch('/api/dashboard-summary');
+    const { total, connected, sent, notContacted, researched, drafted } = await res.json();
+    document.getElementById('totalLeads').textContent = total;
+    document.getElementById('drafted').textContent = drafted;
+    document.getElementById('sent').textContent = sent;
+    document.getElementById('researched').textContent = researched;
+    document.getElementById('connectedLeads').textContent = connected;
+    document.getElementById('notContactedLeads').textContent = notContacted;
+  }
+
+  function openSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+      fetch('/api/settings/linkedin-token')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('linkedinToken').value = data.linkedinToken || '';
+        });
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    async function saveSettings() {
+      const token = document.getElementById('linkedinToken').value.trim();
+      const res = await fetch('/api/settings/linkedin-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ linkedinToken: token })
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        // const msg = ;
+        showToast(`<i class="fa-solid fa-circle-check"></i> Token saved!`);
+        closeSettingsModal();
+      } else {
+        showToast(`<i class="fa-solid fa-circle-xmark"></i> Failed to save`, 'error');
+      }
+    }
+    function copyToClipboard(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  // Create a temporary textarea if element is disabled
+  if (el.disabled) {
+    const temp = document.createElement("textarea");
+    temp.value = el.value;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+  } else {
+    el.select();
+    document.execCommand("copy");
+  }
+
+  showToast("Copied to clipboard!");
+}
+  // Initial load
+  loadTodaysLeads();
+  loadTodaysStats();
+  setInterval(loadTodaysStats, 30000); // refresh every 30 seconds
+  loadSummary();
+</script>
+
 
     <style>
         @keyframes slide-in {
