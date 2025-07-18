@@ -29,6 +29,42 @@ MongoClient.connect(MONGO_URI)
   })
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
+  app.post('/api/assign-todays-leads', async (req, res) => {
+  try {
+    const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+    // Find 50 random eligible leads
+    const eligibleLeads = await leads.aggregate([
+      {
+        $match: {
+          sent: false,
+          "msg_draft.status": true
+        }
+      },
+      { $sample: { size: 50 } },
+      { $project: { _id: 1 } }
+    ]).toArray();
+
+    if (eligibleLeads.length === 0) {
+      return res.status(404).json({ message: "No eligible leads to assign." });
+    }
+
+    const ids = eligibleLeads.map(doc => doc._id);
+
+    const updateResult = await leads.updateMany(
+      { _id: { $in: ids } },
+      { $set: { Date: today } }
+    );
+
+    res.json({ message: "Leads assigned", updatedCount: updateResult.modifiedCount });
+  } catch (err) {
+    console.error("Assignment error:", err);
+    res.status(500).json({ error: "Internal error assigning leads" });
+  }
+});
+
+
+  
 // GET leads with pagination, filters, and search
 app.get('/api/leads', async (req, res) => {
   const { page = 1, limit = 10, city, status, search } = req.query;
